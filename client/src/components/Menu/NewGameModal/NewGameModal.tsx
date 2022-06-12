@@ -3,6 +3,8 @@ import React, { Component, CSSProperties } from "react"
 import { GasPrice } from "@cosmjs/stargate"
 import { checkersChainId, getCheckersChainInfo } from "../../../types/checkers/chain"
 import { CheckersSigningStargateClient } from "../../../checkers_signingstargateclient"
+import {} from "../../../types/checkers/extensions-gui"
+
 import { Link } from "react-router-dom"
 import {
     Alert,
@@ -148,17 +150,11 @@ export default class NewGameModal extends Component<INewGameModalProps,
                     </Alert>
                 </ModalBody>
                 <ModalFooter>
-                    <Link
-                        to={{
-                            pathname: "/play/0",
-                            search: "?newGame=true",
-                        }}
-                        style={this.linkStyles}
-                        onClick={this.handleSubmit}>
+                    <div style={this.linkStyles} onClick={this.handleSubmit}>
                         <Button color="success" size="lg">
                             Play Game!
                         </Button>
-                    </Link>
+                    </div>
                     <Button color="danger" size="lg" onClick={this.props.close}>
                         Cancel
                     </Button>
@@ -167,21 +163,15 @@ export default class NewGameModal extends Component<INewGameModalProps,
         )
     }
 
-    private handleSubmit(event: any): void {
+    private async handleSubmit(event: any): Promise<void> {
         if (
             this.p1NameRef.current &&
             this.p2NameRef.current &&
             this.p1AIRef.current &&
             this.p2AIRef.current
         ) {
-            const {
-                name: p1Name,
-                isValid: p1Valid,
-            } = this.p1NameRef.current.state
-            const {
-                name: p2Name,
-                isValid: p2Valid,
-            } = this.p2NameRef.current.state
+            const { name: p1Name, isValid: p1Valid } = this.p1NameRef.current.state
+            const { name: p2Name, isValid: p2Valid } = this.p2NameRef.current.state
 
             if (
                 this.p1AIRef.current.state.checked &&
@@ -201,26 +191,10 @@ export default class NewGameModal extends Component<INewGameModalProps,
             }
 
             if (p1Valid && p2Valid) {
-                const info: IGameInfo = {
-                    board: null,
-                    created: new Date(),
-                    isNewGame: true,
-                    last: new Date(),
-                    p1: {
-                        is_ai: this.p1AIRef.current.state.checked,
-                        name: p1Name,
-                        score: 0,
-                    },
-                    p2: {
-                        is_ai: this.p2AIRef.current.state.checked,
-                        name: p2Name,
-                        score: 0,
-                    },
-                    turn: 1,
-                }
-                const saved: IGameInfo[] = Lockr.get("saved_games") || []
-                Lockr.set("saved_games", [info, ...saved])
+                const { creator, signingClient } = await this.getSigningStargateClient()
+                const index: string = await signingClient.createGuiGame(creator, p1Name, p2Name)
                 this.props.close()
+                window.location.replace(`/play/${index}`)
             } else {
                 event.preventDefault()
             }
