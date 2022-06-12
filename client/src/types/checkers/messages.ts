@@ -8,12 +8,12 @@ import {
     MsgRejectGameResponse,
 } from "../generated/checkers/tx"
 
-export const typeUrlMsgCreateGame = "/xavierlepretre.checkers.checkers.MsgCreateGame"
-export const typeUrlMsgCreateGameResponse = "/xavierlepretre.checkers.checkers.MsgCreateGameResponse"
-export const typeUrlMsgPlayMove = "/xavierlepretre.checkers.checkers.MsgPlayMove"
-export const typeUrlMsgPlayMoveResponse = "/xavierlepretre.checkers.checkers.MsgPlayMoveResponse"
-export const typeUrlMsgRejectGame = "/xavierlepretre.checkers.checkers.MsgRejectGame"
-export const typeUrlMsgRejectGameResponse = "/xavierlepretre.checkers.checkers.MsgRejectGameResponse"
+export const typeUrlMsgCreateGame = "/pablo.checkers.checkers.MsgCreateGame"
+export const typeUrlMsgCreateGameResponse = "/pablo.checkers.checkers.MsgCreateGameResponse"
+export const typeUrlMsgPlayMove = "/pablo.checkers.checkers.MsgPlayMove"
+export const typeUrlMsgPlayMoveResponse = "/pablo.checkers.checkers.MsgPlayMoveResponse"
+export const typeUrlMsgRejectGame = "/pablo.checkers.checkers.MsgRejectGame"
+export const typeUrlMsgRejectGameResponse = "/pablo.checkers.checkers.MsgRejectGameResponse"
 
 export const checkersTypes: ReadonlyArray<[string, GeneratedType]> = [
     [typeUrlMsgCreateGame, MsgCreateGame],
@@ -25,7 +25,7 @@ export const checkersTypes: ReadonlyArray<[string, GeneratedType]> = [
 ]
 
 export interface MsgCreateGameEncodeObject extends EncodeObject {
-    readonly typeUrl: "/xavierlepretre.checkers.checkers.MsgCreateGame"
+    readonly typeUrl: "/pablo.checkers.checkers.MsgCreateGame"
     readonly value: Partial<MsgCreateGame>
 }
 
@@ -36,7 +36,7 @@ export function isMsgCreateGameEncodeObject(
 }
 
 export interface MsgCreateGameResponseEncodeObject extends EncodeObject {
-    readonly typeUrl: "/xavierlepretre.checkers.checkers.MsgCreateGameResponse"
+    readonly typeUrl: "/pablo.checkers.checkers.MsgCreateGameResponse"
     readonly value: Partial<MsgCreateGameResponse>
 }
 
@@ -47,7 +47,7 @@ export function isMsgCreateGameResponseEncodeObject(
 }
 
 export interface MsgPlayMoveEncodeObject extends EncodeObject {
-    readonly typeUrl: "/xavierlepretre.checkers.checkers.MsgPlayMove"
+    readonly typeUrl: "/pablo.checkers.checkers.MsgPlayMove"
     readonly value: Partial<MsgPlayMove>
 }
 
@@ -58,7 +58,7 @@ export function isMsgPlayMoveEncodeObject(
 }
 
 export interface MsgPlayMoveResponseEncodeObject extends EncodeObject {
-    readonly typeUrl: "/xavierlepretre.checkers.checkers.MsgPlayMoveResponse"
+    readonly typeUrl: "/pablo.checkers.checkers.MsgPlayMoveResponse"
     readonly value: Partial<MsgPlayMoveResponse>
 }
 
@@ -69,7 +69,7 @@ export function isMsgPlayMoveResponseEncodeObject(
 }
 
 export interface MsgRejectGameEncodeObject extends EncodeObject {
-    readonly typeUrl: "/xavierlepretre.checkers.checkers.MsgRejectGame"
+    readonly typeUrl: "/pablo.checkers.checkers.MsgRejectGame"
     readonly value: Partial<MsgRejectGame>
 }
 
@@ -80,7 +80,7 @@ export function isMsgRejectGameEncodeObject(
 }
 
 export interface MsgRejectGameResponseEncodeObject extends EncodeObject {
-    readonly typeUrl: "/xavierlepretre.checkers.checkers.MsgRejectGameResponse"
+    readonly typeUrl: "/pablo.checkers.checkers.MsgRejectGameResponse"
     readonly value: Partial<MsgRejectGameResponse>
 }
 
