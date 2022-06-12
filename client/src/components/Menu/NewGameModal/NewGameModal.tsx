@@ -1,6 +1,9 @@
-import Lockr from "lockr";
-import React, { Component, CSSProperties } from "react";
-import { Link } from "react-router-dom";
+import Lockr from "lockr"
+import React, { Component, CSSProperties } from "react"
+import { GasPrice } from "@cosmjs/stargate"
+import { checkersChainId, getCheckersChainInfo } from "../../../types/checkers/chain"
+import { CheckersSigningStargateClient } from "../../../checkers_signingstargateclient"
+import { Link } from "react-router-dom"
 import {
     Alert,
     Button,
@@ -10,49 +13,92 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
-    Row
-} from "reactstrap";
+    Row,
+} from "reactstrap"
 
-import { IGameInfo } from "../../../sharedTypes";
-import "./NewGame.css";
-import PlayerAiCheckbox from "./PlayerAiCheckbox";
-import PlayerNameInput from "./PlayerNameInput";
+import { IGameInfo } from "../../../sharedTypes"
+import "./NewGame.css"
+import PlayerAiCheckbox from "./PlayerAiCheckbox"
+import PlayerNameInput from "./PlayerNameInput"
+import { Window as KeplrWindow } from "@keplr-wallet/types"
+import { OfflineSigner } from "@cosmjs/proto-signing"
+
+declare global {
+    interface Window extends KeplrWindow {
+    }
+}
 
 interface INewGameModalProps {
     close: () => void;
     shown: boolean;
+    rpcUrl: string;
+
+
+}
+
+interface CreatorInfo {
+    creator: string;
+    signingClient: CheckersSigningStargateClient;
 }
 
 interface INewGameModalState {
     showAlert: boolean;
+    creator: string;
+    signingClient: CheckersSigningStargateClient | undefined;
 }
 
-export default class NewGameModal extends Component<
-    INewGameModalProps,
-    INewGameModalState
-> {
+export default class NewGameModal extends Component<INewGameModalProps,
+    INewGameModalState> {
     private readonly linkStyles: CSSProperties = {
         color: "white",
         display: "block",
         height: "100%",
-        textDecoration: "none"
-    };
-    private readonly p1NameRef: React.RefObject<PlayerNameInput>;
-    private readonly p2NameRef: React.RefObject<PlayerNameInput>;
-    private readonly p1AIRef: React.RefObject<PlayerAiCheckbox>;
-    private readonly p2AIRef: React.RefObject<PlayerAiCheckbox>;
+        textDecoration: "none",
+    }
+    private readonly p1NameRef: React.RefObject<PlayerNameInput>
+    private readonly p2NameRef: React.RefObject<PlayerNameInput>
+    private readonly p1AIRef: React.RefObject<PlayerAiCheckbox>
+    private readonly p2AIRef: React.RefObject<PlayerAiCheckbox>
 
     public constructor(props: INewGameModalProps) {
-        super(props);
+        super(props)
         this.state = {
-            showAlert: false
-        };
-        this.p1NameRef = React.createRef();
-        this.p2NameRef = React.createRef();
-        this.p1AIRef = React.createRef();
-        this.p2AIRef = React.createRef();
+            showAlert: false,
+            creator: "",
+            signingClient: undefined,
+        }
+        this.p1NameRef = React.createRef()
+        this.p2NameRef = React.createRef()
+        this.p1AIRef = React.createRef()
+        this.p2AIRef = React.createRef()
 
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this)
+    }
+
+    protected async getSigningStargateClient(): Promise<CreatorInfo> {
+        if (this.state.creator && this.state.signingClient) {
+            return {
+                creator: this.state.creator,
+                signingClient: this.state.signingClient,
+            }
+        }
+        const { keplr } = window
+        if (!keplr){
+            alert("you need to install keplr")
+            throw new Error("You need to install Keplr")
+        }
+        await keplr.experimentalSuggestChain(getCheckersChainInfo())
+        const offlineSigner: OfflineSigner = keplr.getOfflineSigner!(checkersChainId)
+        const creator = (await offlineSigner.getAccounts())[0].address
+        const client: CheckersSigningStargateClient = await  CheckersSigningStargateClient.connectWithSigner(
+            this.props.rpcUrl,
+            offlineSigner,
+            {
+                gasPrice: GasPrice.fromString("1stake")
+            }
+        )
+        this.setState({ creator: creator, signingClient: client })
+        return { creator: creator, signingClient: client }
     }
 
     public render() {
@@ -105,7 +151,7 @@ export default class NewGameModal extends Component<
                     <Link
                         to={{
                             pathname: "/play/0",
-                            search: "?newGame=true"
+                            search: "?newGame=true",
                         }}
                         style={this.linkStyles}
                         onClick={this.handleSubmit}>
@@ -118,7 +164,7 @@ export default class NewGameModal extends Component<
                     </Button>
                 </ModalFooter>
             </Modal>
-        );
+        )
     }
 
     private handleSubmit(event: any): void {
@@ -130,12 +176,12 @@ export default class NewGameModal extends Component<
         ) {
             const {
                 name: p1Name,
-                isValid: p1Valid
-            } = this.p1NameRef.current.state;
+                isValid: p1Valid,
+            } = this.p1NameRef.current.state
             const {
                 name: p2Name,
-                isValid: p2Valid
-            } = this.p2NameRef.current.state;
+                isValid: p2Valid,
+            } = this.p2NameRef.current.state
 
             if (
                 this.p1AIRef.current.state.checked &&
@@ -147,11 +193,11 @@ export default class NewGameModal extends Component<
                 // @ts-ignore
                 !window.allowBothAI
             ) {
-                event.preventDefault();
-                this.setState({ showAlert: true });
-                return;
+                event.preventDefault()
+                this.setState({ showAlert: true })
+                return
             } else {
-                this.setState({ showAlert: false });
+                this.setState({ showAlert: false })
             }
 
             if (p1Valid && p2Valid) {
@@ -163,23 +209,23 @@ export default class NewGameModal extends Component<
                     p1: {
                         is_ai: this.p1AIRef.current.state.checked,
                         name: p1Name,
-                        score: 0
+                        score: 0,
                     },
                     p2: {
                         is_ai: this.p2AIRef.current.state.checked,
                         name: p2Name,
-                        score: 0
+                        score: 0,
                     },
-                    turn: 1
-                };
-                const saved: IGameInfo[] = Lockr.get("saved_games") || [];
-                Lockr.set("saved_games", [info, ...saved]);
-                this.props.close();
+                    turn: 1,
+                }
+                const saved: IGameInfo[] = Lockr.get("saved_games") || []
+                Lockr.set("saved_games", [info, ...saved])
+                this.props.close()
             } else {
-                event.preventDefault();
+                event.preventDefault()
             }
         } else {
-            event.preventDefault();
+            event.preventDefault()
         }
     }
 }
