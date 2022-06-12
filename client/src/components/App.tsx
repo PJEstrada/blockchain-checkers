@@ -17,8 +17,13 @@ const titleStyles: CSSProperties = {
     fontSize: "50px",
     textAlign: "center"
 };
-
-const GameContainerWrapper = () => <GameContainer index={useParams().index!} location={useLocation()} />;
+interface GameContainerWrapperProps {
+    rpcUrl: string
+}
+const GameContainerWrapper = ({rpcUrl}: GameContainerWrapperProps) => <GameContainer
+    index={useParams().index!}
+    rpcUrl={rpcUrl}
+    location={useLocation()} />;
 
 const AsyncGameContainer = Loadable({
     loader: () => Promise.resolve(GameContainerWrapper),
@@ -41,7 +46,7 @@ const App = ({ rpcUrl }: AppProps) => {
                 <div style={titleStyles}>Checkers</div>
                 <Routes>
                     <Route path="menu" element={<MenuContainer rpcUrl={rpcUrl} location={""} />} />
-                    <Route path="play/:index" element={<AsyncGameContainer />} />
+                    <Route path="play/:index" element={<AsyncGameContainer rpcUrl={rpcUrl} />} />
                     <Route path="howtoplay" element={<AsyncHowToPlay goBack={goBack} />} />
                     <Route path="*" element={<Navigate to="/menu" replace={true} />} />
                 </Routes>
