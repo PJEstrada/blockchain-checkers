@@ -3,6 +3,7 @@ import QueryString from "query-string";
 import React, { Component } from "react";
 import { IGameInfo } from "../../sharedTypes";
 import { CheckersStargateClient } from "../../checkers_stargateclient"
+import {} from "../../types/checkers/extensions-gui"
 import Menu from "./Menu";
 
 // declare const localStorageSupport: boolean;
@@ -44,7 +45,8 @@ export default class MenuContainer extends Component<
         this.dismissAlert = this.dismissAlert.bind(this);
         this.openModal = this.openModal.bind(this);
     }
-    public componentDidMount(): void {
+    public async componentDidMount(): Promise<void> {
+        const stargateClient = this.getStargateClient()
         const queries = QueryString.parse(this.props.location.search);
         if (queries.newGame) {
             this.setState({ showModal: true });
@@ -58,8 +60,8 @@ export default class MenuContainer extends Component<
         }
         // gameToLoad = null;
         this.setState({
-            saved: Lockr.get("saved_games") || []
-        });
+            saved: await (await this.getStargateClient()).getGuiGames(),
+        })
     }
     /**
      * dismissAlert
