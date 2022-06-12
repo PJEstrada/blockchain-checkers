@@ -51,6 +51,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("AAAAAAAAAAAAAAAAAAAAA", player, game.Turn, game.TurnIs(player))
 	if !game.TurnIs(player) {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,

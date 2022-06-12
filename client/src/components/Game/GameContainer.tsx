@@ -3,6 +3,9 @@ import QueryString from "query-string";
 import React, { Component } from "react";
 import { IGameInfo, IPlayerInfo, Position } from "../../sharedTypes";
 import MoveTree, { Player } from "../../util/MoveTree";
+import { checkersChainId, getCheckersChainInfo } from "../../types/checkers/chain"
+import { OfflineSigner } from "@cosmjs/proto-signing"
+import { GasPrice } from "@cosmjs/stargate"
 import Board from "./Board/Board";
 import BoardMenu from "./BoardMenu/BoardMenu";
 import ScoreBar from "./BoardMenu/ScoreBar";
@@ -28,8 +31,13 @@ interface IGameContainerState {
         [key: string]: boolean;
     };
     [key: string]: any;
+    creator: string
+    signingClient: CheckersSigningStargateClient | undefined
 }
-
+interface CreatorInfo {
+    creator: string
+    signingClient: CheckersSigningStargateClient
+}
 export default class GameContainer extends Component<
     IGameContainerProps,
     IGameContainerState
@@ -50,8 +58,36 @@ export default class GameContainer extends Component<
             name: "Player 2",
             score: 0
         },
-        selected: {}
+        selected: {},
+        creator: "",
+        signingClient: undefined,
     };
+
+    protected async getSigningStargateClient(): Promise<CreatorInfo> {
+        if (this.state.creator && this.state.signingClient)
+            return {
+                creator: this.state.creator,
+                signingClient: this.state.signingClient,
+            }
+        const { keplr } = window
+        if (!keplr) {
+            alert("You need to install Keplr")
+            throw new Error("You need to install Keplr")
+        }
+        await keplr.experimentalSuggestChain(getCheckersChainInfo())
+        const offlineSigner: OfflineSigner = keplr.getOfflineSigner!(checkersChainId)
+        const creator = (await offlineSigner.getAccounts())[0].address
+        const client: CheckersSigningStargateClient = await CheckersSigningStargateClient.connectWithSigner(
+            this.props.rpcUrl,
+            offlineSigner,
+            {
+                gasPrice: GasPrice.fromString("1stake"),
+            },
+        )
+        this.setState({ creator: creator, signingClient: client })
+        return { creator: creator, signingClient: client }
+    }
+
     constructor(props: IGameContainerProps) {
         super(props);
         this.handleSquareClick = this.handleSquareClick.bind(this);
@@ -176,59 +212,39 @@ export default class GameContainer extends Component<
         selected[`${row},${col}`] = true;
         this.setState({ selected });
     }
-    public makeMove(): void {
+    public async makeMove(): Promise<void> {
         if (this.state.locked && !this.currentPlayerIsAI()) {
-            return;
+            return
         }
-        const keys: string[] = Object.keys(this.state.selected);
+        const keys: string[] = Object.keys(this.state.selected)
         if (keys.length === 0) {
-            return;
+            return
         }
 
-        const move: Position[] = keys.map(
-            (k: string): Position => k.split(",").map(Number) as Position
-        );
-        const board: MoveTree = this.state.board.getResultingTree(
-            move
-        ) as MoveTree;
-        const player: Player = this.state.board.current_player;
-        const selected = Object.create(null);
+        const move: Position[] = keys.map((k: string): Position => k.split(",").map(Number) as Position)
 
-        if (board !== null) {
-            this.setState({ board, locked: false }, () => {
-                // check for a change in a player's score
-                // and save the game
-                if (player === 1) {
-                    const p1: IPlayerInfo = this.state.p1 as IPlayerInfo;
-                    p1.score = this.getScore(player);
-                    this.setState({ p1 }, this.saveGame);
-                } else if (player === 2) {
-                    const p2: IPlayerInfo = this.state.p2 as IPlayerInfo;
-                    p2.score = this.getScore(player);
-                    this.setState({ p2 }, this.saveGame);
-                } else {
-                    this.saveGame();
-                }
-                if (board.game_over) {
-                    this.setState({ gameOver: true });
-                } else {
-                    // check if the AI needs to make a move
-                    if (this.currentPlayerIsAI()) {
-                        this.state.board
-                            .getBestMove()
-                            .forEach(
-                                ([row, col]) =>
-                                    (selected[`${row},${col}`] = true)
-                            );
-                        this.setState({ selected, locked: true }, () => {
-                            window.setTimeout(this.makeMove.bind(this), 750);
-                        });
-                    }
-                }
-            });
+        const client = await this.getStargateClient()
+        const canPlayOrNot = await client.canPlayGuiMove(
+            this.props.index,
+            this.state.board.current_player,
+            move,
+        )
+        if (!canPlayOrNot.possible) {
+            const error = `Cannot make this move ${canPlayOrNot.reason}`
+            alert(error)
+            throw new Error(error)
         }
-        // console.log(JSON.stringify(selected));
-        this.setState({ selected });
+
+        const { creator, signingClient } = await this.getSigningStargateClient()
+        try {
+            await signingClient.playGuiMove(creator, this.props.index, move)
+        } catch (e) {
+            console.error(e)
+            alert("Failed to play: " + e)
+        }
+        const selected = Object.create(null)
+        this.setState({ selected })
+        return this.loadGame()
     }
     public render() {
         let winner: string = "";

@@ -2,12 +2,12 @@
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgPlayMove } from "./types/checkers/tx";
 import { MsgCreateGame } from "./types/checkers/tx";
+import { MsgPlayMove } from "./types/checkers/tx";
 import { MsgRejectGame } from "./types/checkers/tx";
 const types = [
-    ["/pablo.checkers.checkers.MsgPlayMove", MsgPlayMove],
     ["/pablo.checkers.checkers.MsgCreateGame", MsgCreateGame],
+    ["/pablo.checkers.checkers.MsgPlayMove", MsgPlayMove],
     ["/pablo.checkers.checkers.MsgRejectGame", MsgRejectGame],
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -23,8 +23,8 @@ const txClient = async (wallet, { addr: addr } = { addr: "http://localhost:26657
     const { address } = (await wallet.getAccounts())[0];
     return {
         signAndBroadcast: (msgs, { fee, memo } = { fee: defaultFee, memo: "" }) => client.signAndBroadcast(address, msgs, fee, memo),
-        msgPlayMove: (data) => ({ typeUrl: "/pablo.checkers.checkers.MsgPlayMove", value: data }),
         msgCreateGame: (data) => ({ typeUrl: "/pablo.checkers.checkers.MsgCreateGame", value: data }),
+        msgPlayMove: (data) => ({ typeUrl: "/pablo.checkers.checkers.MsgPlayMove", value: data }),
         msgRejectGame: (data) => ({ typeUrl: "/pablo.checkers.checkers.MsgRejectGame", value: data }),
     };
 };

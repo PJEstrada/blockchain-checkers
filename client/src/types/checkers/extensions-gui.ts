@@ -62,6 +62,7 @@ CheckersSigningStargateClient.prototype.createGuiGame = async function (
     black: string,
     red: string,
 ): Promise<string> {
+    console.log('CREATE GAME', black, red)
     return getCreatedGameId(await this.createGame(creator, black, red, "stake", Long.ZERO, "auto"), 0)
 }
 
@@ -70,6 +71,7 @@ CheckersSigningStargateClient.prototype.playGuiMove = async function (
     gameIndex: string,
     move: number[][],
 ): Promise<void> {
+    console.log('ACTUAL PLAY MOVE', creator, gameIndex, move)
     await this.playMove(creator, gameIndex, guiMoveToPos(move[0]), guiMoveToPos(move[1]), "auto")
 }
 

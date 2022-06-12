@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,8 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	if err != nil {
 		panic(err.Error())
 	}
+
+	fmt.Println("gameee play moveee", game.Turn, player, game.TurnIs(player))
 	if !game.TurnIs(player) {
 		return nil, types.ErrNotPlayerTurn
 	}

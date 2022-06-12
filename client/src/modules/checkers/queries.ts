@@ -80,6 +80,7 @@ export function setupCheckersExtension(base: QueryClient): CheckersExtension {
                 from: Pos,
                 to: Pos,
             ): Promise<QueryCanPlayMoveResponse> => {
+                console.log('CAN PLAY MOVE', index, player, from, to)
                 return queryService.CanPlayMove({
                     idValue: index,
                     player: player,
