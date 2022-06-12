@@ -16,6 +16,7 @@ const Board = (props: IBoardProps) => {
         borderColor: props.turn === 1 ? "#444" : "red"
     };
     const squares: JSX.Element[] = [];
+    console.log('SUQARE', props.squares)
     props.squares.forEach((arr, row) => {
         arr.forEach((square, col) => {
             const isSelected = props.selected[`${row},${col}`] === true;
