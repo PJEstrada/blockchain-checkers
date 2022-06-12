@@ -29,7 +29,10 @@ const AsyncHowToPlay = Loadable({
     loading: Loading,
 });
 
-const App = () => {
+export interface AppProps {
+    rpcUrl: string;
+}
+const App = ({ rpcUrl }: AppProps) => {
     const navigate = useNavigate()
     const goBack = () => navigate(-1)
     return (
