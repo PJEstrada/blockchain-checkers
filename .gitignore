@@ -1,0 +1,6 @@
+vue/node_modules
+vue/dist
+release/
+.idea
+client/node_modules
+scripts/node_modules

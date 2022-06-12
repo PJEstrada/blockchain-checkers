@@ -1,0 +1,11 @@
+syntax = "proto3";
+package pablo.checkers.checkers;
+
+option go_package = "github.com/pablo/checkers/x/checkers/types";
+
+import "gogoproto/gogo.proto";
+import "checkers/winning_player.proto";
+
+message Leaderboard {
+  repeated WinningPlayer winners = 1; 
+}
