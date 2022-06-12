@@ -1,19 +1,19 @@
-import React from "react"
-import { IPlayerInfo } from "../../../sharedTypes"
-import { Player } from "../../../util/MoveTree"
-import NameInput from "./NameInput"
-import "./ScoreBar.css"
+import React from "react";
+import { IPlayerInfo } from "../../../sharedTypes";
+import { Player } from "../../../util/MoveTree";
+import NameInput from "./NameInput";
+import "./ScoreBar.css";
 
 interface IScoreBarProps {
-    updateName: (player: "p1" | "p2", newName: string) => void
-    turn: Player
-    p1: IPlayerInfo
-    p2: IPlayerInfo
+    updateName: (player: "p1" | "p2", newName: string) => void;
+    turn: Player;
+    p1: IPlayerInfo;
+    p2: IPlayerInfo;
 }
 
 const ScoreBar = (props: IScoreBarProps) => {
-    const p1OnChange = (name: string) => props.updateName("p1", name)
-    const p2OnChange = (name: string) => props.updateName("p2", name)
+    const p1OnChange = (name: string) => props.updateName("p1", name);
+    const p2OnChange = (name: string) => props.updateName("p2", name);
     return (
         <div id="score">
             <div>
@@ -38,7 +38,6 @@ const ScoreBar = (props: IScoreBarProps) => {
                 : <span className="score">{props.p2.score}</span>
             </div>
         </div>
-    )
-}
-
-export default ScoreBar
+    );
+};
+export default ScoreBar;

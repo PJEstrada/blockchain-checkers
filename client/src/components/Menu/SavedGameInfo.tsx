@@ -1,10 +1,10 @@
-import React from "react"
-import { IGameInfo } from "../../sharedTypes"
-import formatDate from "../../util/formatDate"
+import React from "react";
+import { IGameInfo } from "../../sharedTypes";
+import formatDate from "../../util/formatDate";
 // import MenuContext from "./MenuContext";
 
 interface ISavedGameInfoProps {
-    info: IGameInfo
+    info: IGameInfo;
 }
 
 const SavedGameInfo = (props: ISavedGameInfoProps) => (
@@ -15,18 +15,16 @@ const SavedGameInfo = (props: ISavedGameInfoProps) => (
             <span
                 style={{
                     color: "black",
-                    fontStyle: props.info.turn === 1 ? "italic" : "normal",
-                }}
-            >
+                    fontStyle: props.info.turn === 1 ? "italic" : "normal"
+                }}>
                 {props.info.p1.name}
             </span>
             <span className="small"> vs </span>
             <span
                 style={{
                     color: "red",
-                    fontStyle: props.info.turn === 2 ? "italic" : "normal",
-                }}
-            >
+                    fontStyle: props.info.turn === 2 ? "italic" : "normal"
+                }}>
                 {props.info.p2.name}
             </span>
         </h3>
@@ -41,5 +39,5 @@ const SavedGameInfo = (props: ISavedGameInfoProps) => (
     </div>
     //     )}
     // </MenuContext.Consumer>
-)
-export default SavedGameInfo
+);
+export default SavedGameInfo;

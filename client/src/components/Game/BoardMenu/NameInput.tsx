@@ -1,36 +1,42 @@
-import React, { Component, CSSProperties } from "react"
+import React, { Component, CSSProperties } from "react";
 
 interface INameInputProps {
-    className?: string
-    color: "black" | "red"
-    maxLength?: number
-    onChange: (name: string) => void
-    style?: CSSProperties
-    turn: boolean
-    defaultValue: string
+    className?: string;
+    color: "black" | "red";
+    maxLength?: number;
+    onChange: (name: string) => void;
+    style?: CSSProperties;
+    turn: boolean;
+    defaultValue: string;
 }
 
 interface INameInputState {
-    value: string
+    value: string;
 }
 
-export default class NameInput extends Component<INameInputProps, INameInputState> {
-    public static getDerivedStateFromProps(props: INameInputProps, state: INameInputState): INameInputState {
+export default class NameInput extends Component<
+    INameInputProps,
+    INameInputState
+> {
+    public static getDerivedStateFromProps(
+        props: INameInputProps,
+        state: INameInputState
+    ): INameInputState {
         return {
-            value: props.defaultValue,
-        }
+            value: props.defaultValue
+        };
     }
     public readonly state: INameInputState = {
-        value: this.props.defaultValue,
-    }
+        value: this.props.defaultValue
+    };
     constructor(props: INameInputProps) {
-        super(props)
-        this.onBlur = this.onBlur.bind(this)
-        this.onChange = this.onChange.bind(this)
+        super(props);
+        this.onBlur = this.onBlur.bind(this);
+        this.onChange = this.onChange.bind(this);
     }
     public componentWillUnmount() {
         // let the parent component know that the value has been changed
-        this.props.onChange(this.state.value)
+        this.props.onChange(this.state.value);
     }
 
     public render(): JSX.Element {
@@ -43,24 +49,26 @@ export default class NameInput extends Component<INameInputProps, INameInputStat
                 style={{
                     color: this.props.color,
                     fontStyle: this.props.turn ? "italic" : "normal",
-                    ...this.props.style,
+                    ...this.props.style
                 }}
                 value={this.state.value}
                 type="text"
             />
-        )
+        );
     }
     private onBlur() {
-        this.props.onChange(this.state.value)
+        this.props.onChange(this.state.value);
     }
     private onChange(e: any) {
         const validName = (name: string) =>
-            !/<|>/g.test(name) && name.length > 0 && name.length < (this.props.maxLength || 20)
+            !/<|>/g.test(name) &&
+            name.length > 0 &&
+            name.length < (this.props.maxLength || 20);
 
-        const newName: string = e.target.value
+        const newName: string = e.target.value;
         if (!validName(newName)) {
-            return
+            return;
         }
-        this.setState({ value: newName })
+        this.setState({ value: newName });
     }
 }

@@ -1,30 +1,30 @@
-export type Position = [number, number]
-export type NodeName = Position[]
+export type Position = [number, number];
+export type NodeName = Position[];
 
 export interface IDirections {
-    1: IMoveVector[]
-    2: IMoveVector[]
+    1: IMoveVector[],
+    2: IMoveVector[],
     [key: number]: IMoveVector[]
 }
 
 export interface IGameInfo {
-    board: number[][] | null
-    created: Date
-    last: Date
-    isNewGame: boolean
-    p1: IPlayerInfo
-    p2: IPlayerInfo
-    turn: number
-    index: number
+    board: number[][] | null;
+    created: Date;
+    last: Date;
+    isNewGame: boolean;
+    p1: IPlayerInfo;
+    p2: IPlayerInfo;
+    turn: number;
+    index?: number | null;
 }
 
 export interface IMoveVector {
-    readonly x: -1 | 1
-    readonly y: -1 | 1
+    readonly x: -1 | 1;
+    readonly y: -1 | 1;
 }
 
 export interface IPlayerInfo {
-    name: string
-    score: number
-    is_ai: boolean
+    name: string;
+    score: number;
+    is_ai: boolean;
 }

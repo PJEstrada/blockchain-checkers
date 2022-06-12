@@ -1,28 +1,34 @@
-import React, { Component } from "react"
-import { Col, ListGroupItem, Row } from "reactstrap"
-import { IGameInfo } from "../../sharedTypes"
-import MenuItemButtons from "./MenuItemButtons"
-import SavedGameInfo from "./SavedGameInfo"
+import React, { Component } from "react";
+import { Col, ListGroupItem, Row } from "reactstrap";
+import { IGameInfo } from "../../sharedTypes";
+import MenuItemButtons from "./MenuItemButtons";
+import SavedGameInfo from "./SavedGameInfo";
 
 interface IMenuItemProps {
-    deleteGame: (index: number) => void
-    info: IGameInfo
-    index: number
+    deleteGame: (index: number) => void;
+    info: IGameInfo;
+    index: number;
 }
 
 interface IMenuItemState {
-    showButtons: boolean
+    showButtons: boolean;
 }
 
-export default class MenuItem extends Component<IMenuItemProps, IMenuItemState> {
-    public state: IMenuItemState = {
-        showButtons: false,
+export default class MenuItem extends Component<
+    IMenuItemProps,
+    IMenuItemState
+> {
+    constructor(props: IMenuItemProps) {
+        super(props);
+        this.state = {
+            showButtons: false
+        };
     }
 
     public render() {
-        const deleteGame = () => this.props.deleteGame(this.props.index)
-        const mouseEnter = () => this.setState({ showButtons: true })
-        const mouseLeave = () => this.setState({ showButtons: false })
+        const deleteGame = () => this.props.deleteGame(this.props.index);
+        const mouseEnter = () => this.setState({ showButtons: true });
+        const mouseLeave = () => this.setState({ showButtons: false });
         return (
             <ListGroupItem
                 onMouseEnter={mouseEnter}
@@ -30,9 +36,8 @@ export default class MenuItem extends Component<IMenuItemProps, IMenuItemState> 
                 style={{
                     display: "inline-block",
                     marginBottom: "-4px",
-                    width: "100%",
-                }}
-            >
+                    width: "100%"
+                }}>
                 <Row>
                     <Col xs={8}>
                         <SavedGameInfo info={this.props.info} />
@@ -46,6 +51,6 @@ export default class MenuItem extends Component<IMenuItemProps, IMenuItemState> 
                     </Col>
                 </Row>
             </ListGroupItem>
-        )
+        );
     }
 }
