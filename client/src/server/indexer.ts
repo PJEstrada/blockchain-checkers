@@ -9,7 +9,7 @@ import { Server } from "http"
 import { StoredGame } from "../types/generated/checkers/stored_game"
 import { IndexerStargateClient } from "./indexer_stargateclient"
 import { DbType, GameInfo, PlayerInfo } from "./types"
-
+import { CheckersStargateClient } from "../checkers_stargateclient"
 config()
 
 export const createIndexer = async () => {
